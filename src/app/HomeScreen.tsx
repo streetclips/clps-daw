@@ -1,18 +1,9 @@
 import { usePwa } from '../pwa/usePwa'
 import { Button } from '../ui/Button'
+import { Panel, StatusRow } from '../ui/Panel'
 import styles from './HomeScreen.module.css'
 import { hasAudioSession, isStandalone } from './platform'
-
-type Status = 'ok' | 'bad' | 'pending'
-
-function StatusRow({ label, value, status }: { label: string; value: string; status: Status }) {
-  return (
-    <div className={styles.row}>
-      <span>{label}</span>
-      <span className={styles[status]}>{value}</span>
-    </div>
-  )
-}
+import { SoundTest } from './SoundTest'
 
 export function HomeScreen() {
   const { offlineReady, needRefresh, update } = usePwa()
@@ -33,8 +24,7 @@ export function HomeScreen() {
         </div>
       )}
 
-      <section className={styles.panel}>
-        <h2 className={styles.panelTitle}>SYSTEM CHECK</h2>
+      <Panel title="SYSTEM CHECK">
         <StatusRow
           label="INSTALLED"
           value={installed ? 'YES' : 'NO'}
@@ -50,9 +40,11 @@ export function HomeScreen() {
           value={audioSession ? 'OK' : 'MISSING'}
           status={audioSession ? 'ok' : 'bad'}
         />
-      </section>
+      </Panel>
 
       {!installed && <p className={styles.hint}>TO INSTALL: SHARE &gt; ADD TO HOME SCREEN</p>}
+
+      <SoundTest />
 
       <footer className={styles.version}>
         v{__APP_VERSION__} · {__BUILD_SHA__}

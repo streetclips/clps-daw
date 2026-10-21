@@ -110,15 +110,16 @@ A new song starts with three tracks: LEAD (square, 25 % pulse), BASS (triangle),
 ### Graph
 
 ```
-voice ─┐
-voice ─┼─▶ trackIn ─▶ filter ─▶ delay (dry + wet/feedback) ─▶ volume ─▶ mute/solo ─▶ pan ─┬─▶ masterIn
-voice ─┘                                                                               └─▶ send ─▶ reverbBus
+song voices ──▶ input (mute/solo) ─┐
+preview + pattern-loop voices ─────┴▶ filter ─▶ delay (dry + wet/feedback) ─▶ volume ─▶ pan ─┬─▶ masterIn
+                                                                                            └─▶ send ─▶ reverbBus
 reverbBus = ConvolverNode (generated impulse response, length from reverb.size) ─▶ masterIn
 masterIn ─▶ masterVolume ─▶ limiter (DynamicsCompressorNode) ─▶ destination
 ```
 
-- Disabled filter and delay are bypassed. Mute/solo: a track is silent when muted, or when any
-  track is soloed and it is not.
+- Disabled filter (`allpass`) and delay (wet and feedback at 0) are bypassed.
+- Mute/solo: a track is silent when muted, or when any track is soloed and it is not. Previews and
+  the pattern loop enter after the mute gain, so they stay audible on muted tracks.
 - One graph builder serves both `AudioContext` (live) and `OfflineAudioContext` (WAV export).
 - Parameter changes during playback ramp with `setTargetAtTime`; adding or removing a track
   rebuilds only that track's chain.
@@ -245,6 +246,7 @@ Verified on 2026-10-21 against WebKit sources, MDN and WebKit bugs.
 | BPM          | 60–240                                    |
 | Pitch range  | C1–C8 (MIDI 24–108)                       |
 | Undo history | 100 steps                                 |
+| Live voices  | 64 at once; extra notes are skipped       |
 | WAV          | 44.1 kHz, 16-bit, stereo, song + 2 s tail |
 
 Worst case (128 bars of 4/4 at 60 BPM ≈ 8.5 min) needs about 270 MB to export. If it fails, only

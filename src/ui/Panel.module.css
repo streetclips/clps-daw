@@ -1,0 +1,31 @@
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+  padding: calc(var(--gap) * 2);
+  border: var(--border) solid var(--pico-6);
+  background: var(--pico-1);
+}
+
+.title {
+  font-size: 8px;
+  font-weight: normal;
+  color: var(--pico-6);
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.ok {
+  color: var(--pico-11);
+}
+
+.bad {
+  color: var(--pico-8);
+}
+
+.pending {
+  color: var(--pico-9);
+}

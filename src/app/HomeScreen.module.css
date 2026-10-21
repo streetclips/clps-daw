@@ -4,6 +4,7 @@
   gap: calc(var(--gap) * 3);
   height: 100%;
   padding: calc(var(--gap) * 3) calc(var(--gap) * 2);
+  overflow-y: auto;
 }
 
 .title {
@@ -15,37 +16,6 @@
 .subtitle {
   font-size: 8px;
   color: var(--pico-6);
-}
-
-.panel {
-  display: flex;
-  flex-direction: column;
-  gap: var(--gap);
-  padding: calc(var(--gap) * 2);
-  border: var(--border) solid var(--pico-6);
-  background: var(--pico-1);
-}
-
-.panelTitle {
-  font-size: 8px;
-  color: var(--pico-6);
-}
-
-.row {
-  display: flex;
-  justify-content: space-between;
-}
-
-.ok {
-  color: var(--pico-11);
-}
-
-.bad {
-  color: var(--pico-8);
-}
-
-.pending {
-  color: var(--pico-9);
 }
 
 .hint {

@@ -15,7 +15,8 @@ commit as the code.
 - Work one phase at a time (DESIGN.md → Phases). A phase is done when it is deployed and the user
   has tested its milestone on an iPhone; end the phase by handing over that milestone.
 - `pnpm check` is the CI gate; run it green before every commit.
-- Commit straight to `main`. Every push to `main` deploys.
+- Commit straight to `main`, with the message prefixed `[main] ` (a global commit-msg hook
+  enforces it). Every push to `main` deploys.
 
 ## Code
 
