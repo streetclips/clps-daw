@@ -1,13 +1,8 @@
 import { STEPS_PER_BAR } from '../model/constants'
+import { patternSteps } from '../model/edit'
 import type { Song } from '../model/schema'
 import type { MixGraph } from './graph'
-import {
-  patternNotesAtStep,
-  patternSteps,
-  secondsPerStep,
-  songLengthSteps,
-  songNotesAtStep,
-} from './timeline'
+import { patternNotesAtStep, secondsPerStep, songLengthSteps, songNotesAtStep } from './timeline'
 import { playNote, stopVoice, type Voice } from './voices'
 
 export type PlayTarget =

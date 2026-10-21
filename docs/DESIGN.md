@@ -189,6 +189,10 @@ Landscape shows a "ROTATE TO PORTRAIT" overlay (iOS cannot lock orientation from
 - Piano roll, one finger: tap empty cell = add a note of the current length; tap note = delete;
   drag note = move (pitch and time); drag the end of a note = resize; drag from an empty cell =
   draw a note with the dragged length. Notes and key-column taps play a preview.
+- Drum hits are always one step long: drum tracks hide the note length selector, FOLD and resize.
+- Same-pitch notes never overlap: a new or moved note replaces the ones it covers. Chords use
+  different pitches.
+- CLEAR asks for confirmation until undo exists (phase 4).
 - Track view, one finger: tap empty bar = new pattern of the selected length (1, 2, 4 bars) and open
   it; tap clip = open; drag clip = move along its track; long press clip = DUPLICATE (linked copy
   right after), MAKE UNIQUE, DELETE.

@@ -2,6 +2,7 @@ import { usePwa } from '../pwa/usePwa'
 import { Button } from '../ui/Button'
 import { Panel, StatusRow } from '../ui/Panel'
 import styles from './HomeScreen.module.css'
+import { PatternList } from './PatternList'
 import { hasAudioSession, isStandalone } from './platform'
 import { SoundTest } from './SoundTest'
 
@@ -45,6 +46,8 @@ export function HomeScreen() {
       {!installed && <p className={styles.hint}>TO INSTALL: SHARE &gt; ADD TO HOME SCREEN</p>}
 
       <SoundTest />
+
+      <PatternList />
 
       <footer className={styles.version}>
         v{__APP_VERSION__} · {__BUILD_SHA__}

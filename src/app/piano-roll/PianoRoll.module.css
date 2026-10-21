@@ -1,0 +1,125 @@
+.viewport {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  touch-action: none;
+  background: var(--pico-0);
+}
+
+.content {
+  display: grid;
+}
+
+.corner,
+.ruler,
+.keys {
+  position: sticky;
+  background: var(--pico-0);
+}
+
+.corner {
+  top: 0;
+  left: 0;
+  z-index: 4;
+  border-right: var(--border) solid var(--pico-6);
+  border-bottom: var(--border) solid var(--pico-5);
+}
+
+.ruler {
+  top: 0;
+  z-index: 3;
+  border-bottom: var(--border) solid var(--pico-5);
+}
+
+.barLabel {
+  position: absolute;
+  top: 5px;
+  font-size: 8px;
+  line-height: 1;
+  color: var(--pico-6);
+}
+
+.keys {
+  left: 0;
+  z-index: 2;
+  border-right: var(--border) solid var(--pico-6);
+}
+
+.key {
+  display: flex;
+  align-items: center;
+  padding-left: 4px;
+  font-size: 8px;
+  line-height: 1;
+  color: var(--pico-7);
+  background: var(--pico-1);
+  border-bottom: 1px solid var(--pico-0);
+}
+
+.black {
+  background: var(--pico-0);
+}
+
+.out {
+  color: var(--pico-5);
+}
+
+.root {
+  color: var(--pico-10);
+}
+
+.grid {
+  position: relative;
+  overflow: hidden;
+}
+
+.stripe {
+  background: var(--pico-1);
+  border-bottom: 1px solid var(--pico-0);
+}
+
+.stripeOut {
+  background: var(--pico-0);
+  border-bottom-color: var(--pico-1);
+}
+
+.octave {
+  border-bottom-color: var(--pico-5);
+}
+
+.lines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right, var(--pico-6) 2px, transparent 2px),
+    linear-gradient(to right, var(--pico-5) 1px, transparent 1px),
+    linear-gradient(to right, rgb(95 87 79 / 40%) 1px, transparent 1px);
+  background-size:
+    var(--bar) 100%,
+    var(--beat) 100%,
+    var(--step) 100%;
+}
+
+.note {
+  position: absolute;
+  border: var(--border) solid var(--pico-0);
+  pointer-events: none;
+}
+
+.draft {
+  outline: var(--border) solid var(--pico-7);
+  outline-offset: -2px;
+}
+
+.playhead {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  display: none;
+  width: 2px;
+  background: var(--pico-7);
+  pointer-events: none;
+}

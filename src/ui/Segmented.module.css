@@ -1,0 +1,25 @@
+.segmented {
+  display: flex;
+  border: var(--border) solid var(--pico-7);
+}
+
+.option {
+  flex: 1;
+  min-width: 0;
+  min-height: 40px;
+  padding: 0 4px;
+  border: none;
+  border-left: var(--border) solid var(--pico-5);
+  background: var(--pico-1);
+  font-size: 8px;
+  cursor: pointer;
+}
+
+.option:first-child {
+  border-left: none;
+}
+
+.selected {
+  background: var(--pico-7);
+  color: var(--pico-0);
+}

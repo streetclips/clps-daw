@@ -10,10 +10,6 @@ export function secondsPerStep(bpm: number): number {
   return 60 / bpm / 4
 }
 
-export function patternSteps(pattern: Pattern, meter: Song['meter']): number {
-  return pattern.lengthBars * STEPS_PER_BAR[meter]
-}
-
 export function songLengthBars(song: Song): number {
   let bars = 0
   for (const track of song.tracks) {
