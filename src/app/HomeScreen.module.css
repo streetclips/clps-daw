@@ -1,0 +1,68 @@
+.screen {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--gap) * 3);
+  height: 100%;
+  padding: calc(var(--gap) * 3) calc(var(--gap) * 2);
+}
+
+.title {
+  font-size: 16px;
+  font-weight: normal;
+  color: var(--pico-10);
+}
+
+.subtitle {
+  font-size: 8px;
+  color: var(--pico-6);
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+  padding: calc(var(--gap) * 2);
+  border: var(--border) solid var(--pico-6);
+  background: var(--pico-1);
+}
+
+.panelTitle {
+  font-size: 8px;
+  color: var(--pico-6);
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.ok {
+  color: var(--pico-11);
+}
+
+.bad {
+  color: var(--pico-8);
+}
+
+.pending {
+  color: var(--pico-9);
+}
+
+.hint {
+  font-size: 8px;
+  color: var(--pico-12);
+}
+
+.update {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gap);
+  color: var(--pico-10);
+}
+
+.version {
+  margin-top: auto;
+  font-size: 8px;
+  color: var(--pico-5);
+}

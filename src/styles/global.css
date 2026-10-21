@@ -1,0 +1,66 @@
+:root {
+  --pico-0: #000000;
+  --pico-1: #1d2b53;
+  --pico-2: #7e2553;
+  --pico-3: #008751;
+  --pico-4: #ab5236;
+  --pico-5: #5f574f;
+  --pico-6: #c2c3c7;
+  --pico-7: #fff1e8;
+  --pico-8: #ff004d;
+  --pico-9: #ffa300;
+  --pico-10: #ffec27;
+  --pico-11: #00e436;
+  --pico-12: #29adff;
+  --pico-13: #83769c;
+  --pico-14: #ff77a8;
+  --pico-15: #ffccaa;
+
+  --font: 'Press Start 2P', monospace;
+  --border: 2px;
+  --gap: 8px;
+  --touch: 44px;
+
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  overflow: hidden;
+}
+
+html {
+  background: var(--pico-0);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  color: var(--pico-7);
+  font: 10px/1.8 var(--font);
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+  overscroll-behavior: none;
+}
+
+#root {
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom)
+    env(safe-area-inset-left);
+}
+
+button {
+  font: inherit;
+  color: inherit;
+}

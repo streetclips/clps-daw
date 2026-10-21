@@ -1,0 +1,14 @@
+.button {
+  min-height: var(--touch);
+  padding: 0 12px;
+  background: var(--pico-1);
+  border: var(--border) solid var(--pico-7);
+  box-shadow: 2px 2px 0 var(--pico-5);
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.button:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
+}

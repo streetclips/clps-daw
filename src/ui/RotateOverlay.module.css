@@ -1,0 +1,16 @@
+.overlay {
+  display: none;
+}
+
+@media (orientation: landscape) and (max-height: 500px) {
+  .overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--pico-0);
+    color: var(--pico-10);
+  }
+}
