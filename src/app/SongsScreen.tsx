@@ -1,6 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { createDemoSong } from '../model/demo'
 import { createSong } from '../model/factory'
+import { importSong } from '../model/files'
+import { SongFormatError } from '../model/parse'
 import { listSongs, loadSong, saveSong, seedSong, type SongSummary } from '../state/storage'
 import { useStore } from '../state/store'
 import { Button } from '../ui/Button'
@@ -25,6 +27,8 @@ function nextSongName(songs: SongSummary[]): string {
 export function SongsScreen() {
   const openSong = useStore((state) => state.openSong)
   const [songs, setSongs] = useState<SongSummary[] | null>(null)
+  const [importError, setImportError] = useState<string | null>(null)
+  const fileInput = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     let active = true
@@ -45,6 +49,20 @@ export function SongsScreen() {
     openSong(song)
   }
 
+  const importFile = async (file: File) => {
+    setImportError(null)
+    try {
+      const song = importSong(await file.text())
+      await saveSong(song)
+      openSong(song)
+    } catch (error) {
+      console.error('Import failed', error)
+      const message =
+        error instanceof SongFormatError ? error.message.split('\n')[0]! : 'Import failed'
+      setImportError(message.toUpperCase())
+    }
+  }
+
   const open = async (id: string) => {
     const song = await loadSong(id)
     if (song) openSong(song)
@@ -57,7 +75,22 @@ export function SongsScreen() {
         <p className={styles.subtitle}>POCKET 8-BIT DAW</p>
       </header>
 
-      <Button onClick={create}>+ NEW SONG</Button>
+      <div className={styles.actions}>
+        <Button onClick={create}>+ NEW SONG</Button>
+        <Button onClick={() => fileInput.current?.click()}>IMPORT JSON</Button>
+        <input
+          ref={fileInput}
+          type="file"
+          accept=".json,application/json"
+          hidden
+          onChange={(event) => {
+            const file = event.currentTarget.files?.[0]
+            event.currentTarget.value = ''
+            if (file) void importFile(file)
+          }}
+        />
+      </div>
+      {importError && <p className={styles.error}>{importError}</p>}
 
       <Panel title="SONGS">
         {songs === null && <span className={styles.empty}>LOADING...</span>}

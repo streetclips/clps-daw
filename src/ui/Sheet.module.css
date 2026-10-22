@@ -47,3 +47,11 @@
   font-size: 8px;
   color: var(--pico-6);
 }
+
+.section {
+  padding-top: var(--gap);
+  border-top: 1px solid var(--pico-5);
+  font-size: 8px;
+  font-weight: normal;
+  color: var(--pico-12);
+}

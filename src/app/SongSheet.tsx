@@ -1,6 +1,11 @@
+import { useState } from 'react'
 import { engine } from '../audio/engine'
+import { renderSong } from '../audio/render'
+import { songLengthBars } from '../audio/timeline'
+import { encodeWav } from '../audio/wav'
 import { renameSong, setBpm, setMeter, setScale } from '../model/arrange'
 import { METERS, SCALE_MODES } from '../model/constants'
+import { serializeSong, songFileName } from '../model/files'
 import { noteName } from '../model/scale'
 import type { Song } from '../model/schema'
 import { cancelPendingSave } from '../state/autosave'
@@ -9,8 +14,11 @@ import { useStore } from '../state/store'
 import { Button } from '../ui/Button'
 import { Segmented } from '../ui/Segmented'
 import { Select } from '../ui/Select'
-import { Sheet, SheetRow } from '../ui/Sheet'
+import { Sheet, SheetRow, SheetSection } from '../ui/Sheet'
+import { Slider } from '../ui/Slider'
 import { TextField } from '../ui/TextField'
+import { formatDuration, formatPercent } from './format'
+import { shareFile } from './share'
 
 const MODE_LABELS = { major: 'MAJ', minor: 'MIN', pentatonic: 'PENTA', chromatic: 'CHROM' } as const
 type ModeLabel = (typeof MODE_LABELS)[keyof typeof MODE_LABELS]
@@ -23,8 +31,70 @@ const ROOTS = Array.from({ length: 12 }, (_, root) => ({
 }))
 const BPM_STEPS = [-10, -1, 1, 10]
 
+type WavState =
+  | { status: 'idle' }
+  | { status: 'rendering' }
+  | { status: 'ready'; file: File; seconds: number; song: Song }
+  | { status: 'failed' }
+
+function ExportControls({ song }: { song: Song }) {
+  const [wav, setWav] = useState<WavState>({ status: 'idle' })
+  const empty = songLengthBars(song) === 0
+  const ready = wav.status === 'ready' && wav.song === song ? wav : null
+
+  const exportJson = () =>
+    shareFile(
+      new File([serializeSong(song)], songFileName(song.name, 'json'), {
+        type: 'application/json',
+      }),
+    )
+
+  const render = async () => {
+    setWav({ status: 'rendering' })
+    try {
+      const buffer = await renderSong(song)
+      const channels = Array.from({ length: buffer.numberOfChannels }, (_, i) =>
+        buffer.getChannelData(i),
+      )
+      const file = new File(
+        [encodeWav(channels, buffer.sampleRate)],
+        songFileName(song.name, 'wav'),
+        {
+          type: 'audio/wav',
+        },
+      )
+      setWav({ status: 'ready', file, seconds: buffer.duration, song })
+    } catch (error) {
+      console.error('WAV export failed', error)
+      setWav({ status: 'failed' })
+    }
+  }
+
+  return (
+    <>
+      <SheetRow label="JSON">
+        <Button onClick={exportJson}>EXPORT JSON</Button>
+      </SheetRow>
+      <SheetRow label="WAV">
+        {ready ? (
+          <Button variant="on" onClick={() => shareFile(ready.file)}>
+            SAVE WAV {formatDuration(ready.seconds)}
+          </Button>
+        ) : (
+          <Button disabled={empty || wav.status === 'rendering'} onClick={render}>
+            {wav.status === 'rendering' ? 'RENDERING...' : 'RENDER WAV'}
+          </Button>
+        )}
+      </SheetRow>
+      {empty && <SheetRow label="">ADD CLIPS TO EXPORT AUDIO</SheetRow>}
+      {wav.status === 'failed' && <SheetRow label="">EXPORT FAILED. TRY A SHORTER SONG.</SheetRow>}
+    </>
+  )
+}
+
 export function SongSheet({ song, onClose }: { song: Song; onClose: () => void }) {
   const commit = useStore((state) => state.commit)
+  const sealHistory = useStore((state) => state.sealHistory)
   const closeSong = useStore((state) => state.closeSong)
 
   const remove = async () => {
@@ -76,6 +146,32 @@ export function SongSheet({ song, onClose }: { song: Song; onClose: () => void }
           }
         />
       </SheetRow>
+
+      <SheetSection>MASTER</SheetSection>
+      <Slider
+        label="VOLUME"
+        value={song.masterVolume}
+        min={0}
+        max={1}
+        precision={2}
+        format={formatPercent}
+        onChange={(masterVolume) => commit((s) => ({ ...s, masterVolume }), 'masterVolume')}
+        onEnd={sealHistory}
+      />
+      <Slider
+        label="REVERB"
+        value={song.reverb.size}
+        min={0}
+        max={1}
+        precision={2}
+        format={formatPercent}
+        onChange={(size) => commit((s) => ({ ...s, reverb: { size } }), 'reverbSize')}
+        onEnd={sealHistory}
+      />
+
+      <SheetSection>EXPORT</SheetSection>
+      <ExportControls song={song} />
+
       <SheetRow>
         <Button variant="danger" onClick={remove}>
           DELETE SONG

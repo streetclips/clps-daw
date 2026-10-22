@@ -32,3 +32,7 @@ export function SheetRow({ label, children }: { label?: string; children: ReactN
     </div>
   )
 }
+
+export function SheetSection({ children }: { children: ReactNode }) {
+  return <h3 className={styles.section}>{children}</h3>
+}

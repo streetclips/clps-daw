@@ -49,4 +49,27 @@ describe('history', () => {
 
     expect(useStore.getState().past).toHaveLength(0)
   })
+
+  it('merges consecutive commits that share a key into one step', () => {
+    const { commit, sealHistory, undo } = useStore.getState()
+    commit((song) => setBpm(song, 100), 'bpm')
+    commit((song) => setBpm(song, 101), 'bpm')
+    commit((song) => setBpm(song, 102), 'bpm')
+    sealHistory()
+    commit((song) => setBpm(song, 110), 'bpm')
+
+    expect(useStore.getState().past).toHaveLength(2)
+    undo()
+    expect(bpm()).toBe(102)
+    undo()
+    expect(bpm()).toBe(120)
+  })
+
+  it('keeps commits with different keys apart', () => {
+    const { commit } = useStore.getState()
+    commit((song) => setBpm(song, 100), 'a')
+    commit((song) => setBpm(song, 90), 'b')
+
+    expect(useStore.getState().past).toHaveLength(2)
+  })
 })

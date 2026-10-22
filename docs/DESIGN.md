@@ -171,8 +171,11 @@ Choosing a preset copies its values into the track; the editor then changes them
    track (header with name, color, M, S), bars to the right, a ruler that sets the cursor.
 3. **PATTERN** (piano roll): top bar with back, pattern name, PLAY (loop), note length
    (1/16, 1/8, 1/4, 1/2, 1 bar), FOLD, undo/redo, pattern menu (transpose ±1/±12, shift ±1 step, clear).
-4. **TRACK sheet**: preset, wave, pulse width, ADSR, volume, pan, reverb send, filter, delay, delete.
-5. **SONG sheet**: name, BPM, meter, scale, reverb size, export JSON, export WAV, delete.
+4. **TRACK sheet**: name, test note (drums: one pad per lane), preset, wave, pulse width, ADSR
+   (drums: tune, decay), volume, pan, reverb send, filter, delay, delete. Editing a preset value
+   turns the preset into CUSTOM.
+5. **SONG sheet**: name, BPM, meter, key, scale, master volume, reverb size, export JSON, render and
+   save WAV, delete.
 
 ### Layout (base viewport 390 × 844 pt, inside safe areas)
 
@@ -221,9 +224,13 @@ Landscape shows a "ROTATE TO PORTRAIT" overlay (iOS cannot lock orientation from
   on launch.
 - First launch seeds the DEMO song once (a `localStorage` flag stops it from coming back after
   the user deletes it).
-- Undo/redo keeps up to 100 song snapshots in memory. One gesture = one undo step.
-- Export JSON: `<name>.json`. Export WAV: render offline, then a SAVE button opens the share sheet.
-- Import: `<input type="file" accept=".json,application/json">`, validate, migrate, store as new song.
+- Undo/redo keeps up to 100 song snapshots in memory. One gesture = one undo step: a slider drag
+  commits with a merge key, and releasing the slider seals the step.
+- Export JSON: `<name>.json`, shared on the same tap. Export WAV: RENDER WAV renders offline, then
+  SAVE WAV opens the share sheet; any edit after rendering hides SAVE WAV until the next render.
+  Without file sharing (desktop browsers), both fall back to a download.
+- Import: `<input type="file" accept=".json,application/json">`, validate, migrate, store as new
+  song, open it. Errors show the first line of the validation message.
 
 ## iOS notes
 

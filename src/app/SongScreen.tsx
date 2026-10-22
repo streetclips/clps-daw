@@ -87,7 +87,9 @@ export function SongScreen({ song }: { song: Song }) {
       />
       {sheet?.kind === 'song' && <SongSheet song={song} onClose={close} />}
       {sheet?.kind === 'addTrack' && <AddTrackSheet onClose={close} />}
-      {sheet?.kind === 'track' && sheetTrack && <TrackSheet track={sheetTrack} onClose={close} />}
+      {sheet?.kind === 'track' && sheetTrack && (
+        <TrackSheet track={sheetTrack} song={song} onClose={close} />
+      )}
       {sheetTrack && sheetClip && <ClipMenu track={sheetTrack} clip={sheetClip} onClose={close} />}
     </div>
   )

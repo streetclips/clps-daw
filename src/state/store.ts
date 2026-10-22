@@ -21,6 +21,7 @@ interface AppState {
   song: Song | null
   past: Song[]
   future: Song[]
+  mergeKey: string | null
   view: View
   cursorBar: number
   newPatternBars: Pattern['lengthBars']
@@ -28,7 +29,8 @@ interface AppState {
   fold: boolean
   openSong: (song: Song) => void
   closeSong: () => void
-  commit: (update: (song: Song) => Song) => void
+  commit: (update: (song: Song) => Song, mergeKey?: string) => void
+  sealHistory: () => void
   undo: () => void
   redo: () => void
   editPattern: (
@@ -47,20 +49,30 @@ export const useStore = create<AppState>()((set, get) => ({
   song: null,
   past: [],
   future: [],
+  mergeKey: null,
   view: { screen: 'songs' },
   cursorBar: 0,
   newPatternBars: 1,
   noteLength: '1/8',
   fold: false,
-  openSong: (song) => set({ song, past: [], future: [], view: { screen: 'song' }, cursorBar: 0 }),
-  closeSong: () => set({ song: null, past: [], future: [], view: { screen: 'songs' } }),
-  commit: (update) =>
+  openSong: (song) =>
+    set({ song, past: [], future: [], mergeKey: null, view: { screen: 'song' }, cursorBar: 0 }),
+  closeSong: () =>
+    set({ song: null, past: [], future: [], mergeKey: null, view: { screen: 'songs' } }),
+  commit: (update, mergeKey) =>
     set((state) => {
       if (!state.song) return state
       const next = update(state.song)
       if (next === state.song) return state
-      return { song: next, past: [...state.past, state.song].slice(-HISTORY_LIMIT), future: [] }
+      if (mergeKey && mergeKey === state.mergeKey) return { song: next }
+      return {
+        song: next,
+        past: [...state.past, state.song].slice(-HISTORY_LIMIT),
+        future: [],
+        mergeKey: mergeKey ?? null,
+      }
     }),
+  sealHistory: () => set({ mergeKey: null }),
   undo: () =>
     set((state) => {
       const previous = state.past.at(-1)
@@ -69,13 +81,19 @@ export const useStore = create<AppState>()((set, get) => ({
         song: previous,
         past: state.past.slice(0, -1),
         future: [state.song, ...state.future],
+        mergeKey: null,
       }
     }),
   redo: () =>
     set((state) => {
       const next = state.future[0]
       if (!next || !state.song) return state
-      return { song: next, past: [...state.past, state.song], future: state.future.slice(1) }
+      return {
+        song: next,
+        past: [...state.past, state.song],
+        future: state.future.slice(1),
+        mergeKey: null,
+      }
     }),
   editPattern: (trackId, patternId, edit) =>
     get().commit((song) =>
