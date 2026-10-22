@@ -358,6 +358,11 @@ export function PianoRoll({
 
   const onPointerDown = (event: PointerEvent<HTMLDivElement>) => {
     if (event.pointerType === 'mouse' && event.button !== 0) return
+    if (event.isPrimary) {
+      pointers.current.clear()
+      gesture.current = { kind: 'idle' }
+      if (draftRef.current) setDraft(null)
+    }
     event.currentTarget.setPointerCapture(event.pointerId)
     pointers.current.set(event.pointerId, { x: event.clientX, y: event.clientY })
     if (pointers.current.size === 2) return startPan()

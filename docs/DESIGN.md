@@ -194,7 +194,8 @@ Landscape shows a "ROTATE TO PORTRAIT" overlay (iOS cannot lock orientation from
   different pitches.
 - Track view, one finger: tap empty bar = new pattern of the selected length (1, 2, 4 bars) and open
   it; tap clip = open; drag clip = move along its track; long press clip = EDIT, DUPLICATE (linked
-  copy at the next free bars), MAKE UNIQUE, DELETE; tap the ruler = move the cursor.
+  copy at the next free bars), MAKE UNIQUE, DELETE; tap the ruler = move the cursor; drag on an
+  empty bar, below the tracks or on the ruler = scroll.
 - A new pattern shrinks to the free bars before the next clip. A clip dropped on another clip
   snaps back.
 - Track headers: tap the name = TRACK sheet; M and S toggle mute and solo. Muted or silenced
@@ -203,6 +204,9 @@ Landscape shows a "ROTATE TO PORTRAIT" overlay (iOS cannot lock orientation from
 - Both views: two fingers pan, pinch zooms the time axis.
 - A one-finger edit applies on release. When a second finger lands, the edit is cancelled, so a
   two-finger pan never leaves stray notes.
+- Both grids forget every tracked finger when a new touch starts with no other finger down
+  (`isPrimary`), and the long-press menu drops its finger as it opens. iOS can skip `pointerup`
+  when a sheet opens under a finger; a stale finger made one finger zoom.
 
 ### Look
 

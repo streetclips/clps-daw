@@ -37,7 +37,8 @@ const FOLLOW_AT = 0.25
 type Gesture =
   | { kind: 'idle' }
   | { kind: 'ignore' }
-  | { kind: 'ruler'; pointerId: number }
+  | { kind: 'background'; pointerId: number; start: Point; ruler: boolean }
+  | { kind: 'scroll'; pointerId: number; origin: Point; scrollLeft: number; scrollTop: number }
   | {
       kind: 'pending'
       pointerId: number
@@ -269,8 +270,28 @@ export function TrackView({ song, onOpenTrack, onOpenClipMenu, onAddTrack }: Tra
   const openPattern = (trackId: string, patternId: string) =>
     setView({ screen: 'pattern', trackId, patternId })
 
+  const forgetPointers = () => {
+    cancelLongPress()
+    pointers.current.clear()
+    gesture.current = { kind: 'idle' }
+    if (draftRef.current) setDraft(null)
+  }
+
+  const startScroll = (pointerId: number, origin: Point) => {
+    const viewport = viewportRef.current
+    if (!viewport) return
+    gesture.current = {
+      kind: 'scroll',
+      pointerId,
+      origin,
+      scrollLeft: viewport.scrollLeft,
+      scrollTop: viewport.scrollTop,
+    }
+  }
+
   const onPointerDown = (event: PointerEvent<HTMLDivElement>) => {
     if (event.pointerType === 'mouse' && event.button !== 0) return
+    if (event.isPrimary) forgetPointers()
     const region = regionAt(event.clientX, event.clientY)
     if (region === 'header' && pointers.current.size === 0) return
     event.currentTarget.setPointerCapture(event.pointerId)
@@ -278,14 +299,16 @@ export function TrackView({ song, onOpenTrack, onOpenClipMenu, onAddTrack }: Tra
     if (pointers.current.size === 2) return startPan()
     if (pointers.current.size > 2 || gesture.current.kind !== 'idle') return
 
-    if (region === 'ruler') {
-      gesture.current = { kind: 'ruler', pointerId: event.pointerId }
-      return
-    }
+    const start = { x: event.clientX, y: event.clientY }
     const local = localPoint(event.clientX, event.clientY)
     const track = song.tracks[Math.floor(local.y / ROW_HEIGHT)]
-    if (!track || local.x >= lanesWidth) {
-      gesture.current = { kind: 'ignore' }
+    if (region === 'ruler' || !track || local.x >= lanesWidth) {
+      gesture.current = {
+        kind: 'background',
+        pointerId: event.pointerId,
+        start,
+        ruler: region === 'ruler',
+      }
       return
     }
     const bar = barAt(local.x)
@@ -295,7 +318,10 @@ export function TrackView({ song, onOpenTrack, onOpenClipMenu, onAddTrack }: Tra
       ? setTimeout(() => {
           const current = gesture.current
           if (current.kind === 'pending' && current.pointerId === pointerId) {
-            gesture.current = { kind: 'ignore' }
+            pointers.current.delete(pointerId)
+            gesture.current = { kind: 'idle' }
+            const viewport = viewportRef.current
+            if (viewport?.hasPointerCapture(pointerId)) viewport.releasePointerCapture(pointerId)
             onOpenClipMenu(track.id, clip.id)
           }
         }, LONG_PRESS_MS)
@@ -303,7 +329,7 @@ export function TrackView({ song, onOpenTrack, onOpenClipMenu, onAddTrack }: Tra
     gesture.current = {
       kind: 'pending',
       pointerId,
-      start: { x: event.clientX, y: event.clientY },
+      start,
       trackId: track.id,
       bar,
       clipId: clip?.id ?? null,
@@ -317,7 +343,18 @@ export function TrackView({ song, onOpenTrack, onOpenClipMenu, onAddTrack }: Tra
     const current = gesture.current
     if (current.kind === 'pan') return updatePan(current)
 
-    if (current.kind === 'pending' && current.pointerId === event.pointerId) {
+    if (current.kind === 'scroll' && current.pointerId === event.pointerId) {
+      const viewport = viewportRef.current
+      if (!viewport) return
+      viewport.scrollLeft = current.scrollLeft - (event.clientX - current.origin.x)
+      viewport.scrollTop = current.scrollTop - (event.clientY - current.origin.y)
+      return
+    }
+
+    if (
+      (current.kind === 'pending' || current.kind === 'background') &&
+      current.pointerId === event.pointerId
+    ) {
       if (
         Math.hypot(event.clientX - current.start.x, event.clientY - current.start.y) <
         DRAG_THRESHOLD
@@ -325,12 +362,10 @@ export function TrackView({ song, onOpenTrack, onOpenClipMenu, onAddTrack }: Tra
         return
       }
       cancelLongPress()
+      if (current.kind === 'background') return startScroll(current.pointerId, current.start)
       const track = song.tracks.find((t) => t.id === current.trackId)
       const clip = track?.clips.find((c) => c.id === current.clipId)
-      if (!track || !clip) {
-        gesture.current = { kind: 'ignore' }
-        return
-      }
+      if (!track || !clip) return startScroll(current.pointerId, current.start)
       gesture.current = {
         kind: 'drag',
         pointerId: current.pointerId,
@@ -366,7 +401,7 @@ export function TrackView({ song, onOpenTrack, onOpenClipMenu, onAddTrack }: Tra
     const own = 'pointerId' in current && current.pointerId === event.pointerId
     cancelLongPress()
 
-    if (own && current.kind === 'ruler') {
+    if (own && current.kind === 'background' && current.ruler) {
       setCursorBar(barAt(localPoint(event.clientX, event.clientY).x))
     } else if (own && current.kind === 'pending') {
       const track = song.tracks.find((t) => t.id === current.trackId)
