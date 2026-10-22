@@ -39,6 +39,26 @@ const ICONS = {
     '........',
     '........',
   ],
+  undo: [
+    '..x.....',
+    '.xx.....',
+    'xxxxxx..',
+    '.xx...x.',
+    '..x...x.',
+    '......x.',
+    '..xxxx..',
+    '........',
+  ],
+  redo: [
+    '.....x..',
+    '.....xx.',
+    '..xxxxxx',
+    '.x...xx.',
+    '.x...x..',
+    '.x......',
+    '..xxxx..',
+    '........',
+  ],
 } as const
 
 export type IconName = keyof typeof ICONS

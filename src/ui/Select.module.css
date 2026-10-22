@@ -1,0 +1,11 @@
+.select {
+  flex: 1;
+  min-height: var(--touch);
+  padding: 0 8px;
+  border: var(--border) solid var(--pico-7);
+  border-radius: 0;
+  background: var(--pico-0);
+  color: var(--pico-7);
+  font: 16px var(--font);
+  appearance: none;
+}

@@ -12,3 +12,23 @@
   transform: translate(2px, 2px);
   box-shadow: none;
 }
+
+.button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.button:disabled:active {
+  transform: none;
+  box-shadow: 2px 2px 0 var(--pico-5);
+}
+
+.danger {
+  color: var(--pico-8);
+  border-color: var(--pico-8);
+}
+
+.on {
+  background: var(--pico-7);
+  color: var(--pico-0);
+}

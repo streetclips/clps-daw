@@ -1,5 +1,7 @@
 .segmented {
   display: flex;
+  flex: 1;
+  min-width: 0;
   border: var(--border) solid var(--pico-7);
 }
 

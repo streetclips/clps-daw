@@ -1,0 +1,186 @@
+.viewport {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  touch-action: none;
+  background: var(--pico-0);
+}
+
+.content {
+  display: grid;
+}
+
+.corner,
+.ruler,
+.headers {
+  position: sticky;
+  background: var(--pico-0);
+}
+
+.corner {
+  top: 0;
+  left: 0;
+  z-index: 4;
+  border-right: var(--border) solid var(--pico-6);
+  border-bottom: var(--border) solid var(--pico-5);
+}
+
+.ruler {
+  top: 0;
+  z-index: 3;
+  border-bottom: var(--border) solid var(--pico-5);
+}
+
+.barLabel {
+  position: absolute;
+  top: 7px;
+  font-size: 8px;
+  line-height: 1;
+  color: var(--pico-6);
+}
+
+.cursorMark {
+  position: absolute;
+  bottom: 0;
+  width: 8px;
+  height: 8px;
+  margin-left: -3px;
+  background: var(--pico-10);
+}
+
+.headers {
+  left: 0;
+  z-index: 2;
+  border-right: var(--border) solid var(--pico-6);
+}
+
+.header {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  padding: 0 4px;
+  border-bottom: 1px solid var(--pico-1);
+}
+
+.trackName {
+  overflow: hidden;
+  min-height: 16px;
+  border: none;
+  background: none;
+  font-size: 8px;
+  text-align: left;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+
+.toggles {
+  display: flex;
+  gap: 4px;
+}
+
+.toggle {
+  flex: 1;
+  height: 28px;
+  border: var(--border) solid var(--pico-5);
+  background: var(--pico-1);
+  font-size: 8px;
+  cursor: pointer;
+}
+
+.muted {
+  border-color: var(--pico-8);
+  background: var(--pico-8);
+}
+
+.soloed {
+  border-color: var(--pico-10);
+  background: var(--pico-10);
+  color: var(--pico-0);
+}
+
+.add {
+  height: 36px;
+  border: var(--border) dashed var(--pico-5);
+  background: none;
+  font-size: 8px;
+  color: var(--pico-6);
+  cursor: pointer;
+}
+
+.lanes {
+  position: relative;
+  overflow: hidden;
+}
+
+.lines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to bottom, transparent calc(var(--row) - 1px), var(--pico-1) 1px),
+    linear-gradient(to right, var(--pico-5) 1px, transparent 1px),
+    linear-gradient(to right, rgb(95 87 79 / 45%) 1px, transparent 1px);
+  background-size:
+    100% var(--row),
+    calc(var(--bar) * 4) 100%,
+    var(--bar) 100%;
+}
+
+.clip {
+  position: absolute;
+  overflow: hidden;
+  border: var(--border) solid var(--pico-0);
+  pointer-events: none;
+}
+
+.silent {
+  opacity: 0.35;
+}
+
+.clipName {
+  position: absolute;
+  top: 3px;
+  left: 4px;
+  font-size: 8px;
+  line-height: 1;
+  color: var(--pico-0);
+}
+
+.miniNote {
+  position: absolute;
+  height: 2px;
+  background: var(--pico-0);
+  opacity: 0.6;
+}
+
+.draft {
+  outline: var(--border) solid var(--pico-7);
+  outline-offset: -2px;
+}
+
+.invalid {
+  outline-color: var(--pico-8);
+  opacity: 0.6;
+}
+
+.cursor,
+.playhead {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 2px;
+  pointer-events: none;
+}
+
+.cursor {
+  background: var(--pico-10);
+}
+
+.playhead {
+  display: none;
+  background: var(--pico-7);
+}

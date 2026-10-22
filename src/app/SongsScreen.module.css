@@ -18,17 +18,39 @@
   color: var(--pico-6);
 }
 
-.hint {
-  font-size: 8px;
-  color: var(--pico-12);
-}
-
-.update {
+.song {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--gap);
-  color: var(--pico-10);
+  min-height: var(--touch);
+  padding: 0 var(--gap);
+  border: var(--border) solid var(--pico-5);
+  background: var(--pico-0);
+  text-align: left;
+  cursor: pointer;
+}
+
+.song:active {
+  border-color: var(--pico-7);
+}
+
+.name {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.date,
+.empty {
+  flex: none;
+  font-size: 8px;
+  color: var(--pico-6);
+}
+
+.hint {
+  font-size: 8px;
+  color: var(--pico-12);
 }
 
 .version {

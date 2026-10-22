@@ -192,10 +192,14 @@ Landscape shows a "ROTATE TO PORTRAIT" overlay (iOS cannot lock orientation from
 - Drum hits are always one step long: drum tracks hide the note length selector, FOLD and resize.
 - Same-pitch notes never overlap: a new or moved note replaces the ones it covers. Chords use
   different pitches.
-- CLEAR asks for confirmation until undo exists (phase 4).
 - Track view, one finger: tap empty bar = new pattern of the selected length (1, 2, 4 bars) and open
-  it; tap clip = open; drag clip = move along its track; long press clip = DUPLICATE (linked copy
-  right after), MAKE UNIQUE, DELETE.
+  it; tap clip = open; drag clip = move along its track; long press clip = EDIT, DUPLICATE (linked
+  copy at the next free bars), MAKE UNIQUE, DELETE; tap the ruler = move the cursor.
+- A new pattern shrinks to the free bars before the next clip. A clip dropped on another clip
+  snaps back.
+- Track headers: tap the name = TRACK sheet; M and S toggle mute and solo. Muted or silenced
+  tracks show their clips dimmed.
+- Deleting a song asks for confirmation (it is not undoable); everything else relies on undo.
 - Both views: two fingers pan, pinch zooms the time axis.
 - A one-finger edit applies on release. When a second finger lands, the edit is cancelled, so a
   two-finger pan never leaves stray notes.
@@ -208,8 +212,11 @@ Landscape shows a "ROTATE TO PORTRAIT" overlay (iOS cannot lock orientation from
 
 ## Storage and files
 
-- IndexedDB (`idb-keyval`): one entry per song, keyed by id. Autosave 500 ms after the last change.
-  Call `navigator.storage.persist()` on first launch.
+- IndexedDB (`idb-keyval`): one entry per song, keyed by id. Autosave 500 ms after the last change,
+  flushed at once when the app is hidden or the song is closed. Call `navigator.storage.persist()`
+  on launch.
+- First launch seeds the DEMO song once (a `localStorage` flag stops it from coming back after
+  the user deletes it).
 - Undo/redo keeps up to 100 song snapshots in memory. One gesture = one undo step.
 - Export JSON: `<name>.json`. Export WAV: render offline, then a SAVE button opens the share sheet.
 - Import: `<input type="file" accept=".json,application/json">`, validate, migrate, store as new song.

@@ -1,18 +1,29 @@
 import { useStore } from '../state/store'
 import { RotateOverlay } from '../ui/RotateOverlay'
-import { HomeScreen } from './HomeScreen'
 import { PatternScreen } from './PatternScreen'
+import { SongScreen } from './SongScreen'
+import { SongsScreen } from './SongsScreen'
+import { UpdateBanner } from './UpdateBanner'
 
 export function App() {
   const view = useStore((state) => state.view)
+  const song = useStore((state) => state.song)
 
   return (
     <>
-      {view.screen === 'pattern' ? (
-        <PatternScreen key={view.patternId} trackId={view.trackId} patternId={view.patternId} />
+      {!song ? (
+        <SongsScreen />
+      ) : view.screen === 'pattern' ? (
+        <PatternScreen
+          key={view.patternId}
+          song={song}
+          trackId={view.trackId}
+          patternId={view.patternId}
+        />
       ) : (
-        <HomeScreen />
+        <SongScreen song={song} />
       )}
+      <UpdateBanner />
       <RotateOverlay />
     </>
   )

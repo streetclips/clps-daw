@@ -1,0 +1,34 @@
+import type { ReactNode } from 'react'
+import { Button } from './Button'
+import styles from './Sheet.module.css'
+
+export function Sheet({
+  title,
+  onClose,
+  children,
+}: {
+  title: ReactNode
+  onClose: () => void
+  children: ReactNode
+}) {
+  return (
+    <div className={styles.backdrop} onClick={onClose}>
+      <section className={styles.sheet} onClick={(event) => event.stopPropagation()}>
+        <header className={styles.header}>
+          <h2 className={styles.title}>{title}</h2>
+          <Button onClick={onClose}>CLOSE</Button>
+        </header>
+        {children}
+      </section>
+    </div>
+  )
+}
+
+export function SheetRow({ label, children }: { label?: string; children: ReactNode }) {
+  return (
+    <div className={styles.row}>
+      {label !== undefined && <span className={styles.label}>{label}</span>}
+      {children}
+    </div>
+  )
+}

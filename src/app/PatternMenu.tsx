@@ -16,10 +16,6 @@ export function PatternMenu({
   onEdit: (edit: Edit) => void
   onClose: () => void
 }) {
-  const clear = () => {
-    if (window.confirm('CLEAR ALL NOTES?')) onEdit(clearPattern)
-  }
-
   return (
     <div className={styles.menu}>
       {!drums && (
@@ -38,7 +34,7 @@ export function PatternMenu({
         <Button onClick={() => onEdit((p, steps) => shiftPattern(p, 1, steps))}>&gt;</Button>
       </div>
       <div className={styles.menuRow}>
-        <Button className={styles.danger} onClick={clear}>
+        <Button variant="danger" onClick={() => onEdit(clearPattern)}>
           CLEAR
         </Button>
         <span className={styles.menuLabel} />

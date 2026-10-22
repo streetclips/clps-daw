@@ -22,6 +22,7 @@ import {
 import { inScale, isBlackKey, noteName, pitchClass, synthRows } from '../../model/scale'
 import type { Note, Pattern, Song, Track } from '../../model/schema'
 import { noteLengthSteps, useStore } from '../../state/store'
+import { centerOf, clamp, distanceOf, DRAG_THRESHOLD, firstTwo, type Point } from '../gestures'
 import {
   cellAt,
   drawnNote,
@@ -37,18 +38,12 @@ const KEY_WIDTH = 44
 const RULER_HEIGHT = 20
 const ROW_HEIGHT = 28
 const TALL_ROW_HEIGHT = 44
-const DRAG_THRESHOLD = 6
 const MIN_ZOOM_BARS = 0.25
 const MIDDLE_C = 60
 const DRUM_NAMES = ['KICK', 'SNR', 'CHH', 'OHH', 'TOM']
 const DRUM_ROWS = [0, 1, 2, 3, 4]
 
 type Draft = { kind: 'add'; note: Note } | { kind: 'move' | 'resize'; from: NoteRef; note: Note }
-
-interface Point {
-  x: number
-  y: number
-}
 
 type DragMode = 'draw' | 'move' | 'resize'
 
@@ -75,14 +70,6 @@ type Gesture =
     }
 
 type Scale = Song['scale']
-
-function clamp(value: number, min: number, max: number): number {
-  return Math.min(Math.max(value, min), max)
-}
-
-function centerOf(a: Point, b: Point): Point {
-  return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 }
-}
 
 function previewPitch(trackId: string, pitch: number, unlock: boolean): boolean {
   if (unlock) engine.unlock()
@@ -309,21 +296,16 @@ export function PianoRoll({
     return 'grid'
   }
 
-  const twoPointers = (): [Point, Point] | null => {
-    const [a, b] = [...pointers.current.values()]
-    return a && b ? [a, b] : null
-  }
-
   const startPan = () => {
     const viewport = viewportRef.current
-    const pair = twoPointers()
+    const pair = firstTwo(pointers.current)
     if (!viewport || !pair) return
     const center = centerOf(...pair)
     const rect = viewport.getBoundingClientRect()
     gesture.current = {
       kind: 'pan',
       center,
-      distance: Math.max(Math.hypot(pair[0].x - pair[1].x, pair[0].y - pair[1].y), 1),
+      distance: distanceOf(...pair),
       scrollTop: viewport.scrollTop,
       zoom: visibleBars,
       anchorStep: (viewport.scrollLeft + center.x - rect.left - KEY_WIDTH) / stepWidth,
@@ -333,10 +315,10 @@ export function PianoRoll({
 
   const updatePan = (pan: Extract<Gesture, { kind: 'pan' }>) => {
     const viewport = viewportRef.current
-    const pair = twoPointers()
+    const pair = firstTwo(pointers.current)
     if (!viewport || !pair) return
     const center = centerOf(...pair)
-    const distance = Math.max(Math.hypot(pair[0].x - pair[1].x, pair[0].y - pair[1].y), 1)
+    const distance = distanceOf(...pair)
     const nextZoom = clamp((pan.zoom * pan.distance) / distance, MIN_ZOOM_BARS, maxZoom)
     const nextStepWidth = (viewportWidth - KEY_WIDTH) / (nextZoom * stepsPerBar)
     const rect = viewport.getBoundingClientRect()

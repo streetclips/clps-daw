@@ -1,0 +1,21 @@
+.screen {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.info {
+  flex: 1;
+  font-size: 8px;
+  color: var(--pico-6);
+}
+
+.newLabel {
+  font-size: 8px;
+  color: var(--pico-6);
+}
+
+.newBars {
+  flex: none;
+  width: 120px;
+}

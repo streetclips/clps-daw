@@ -1,6 +1,6 @@
 import { useEffect, useState, useSyncExternalStore } from 'react'
 import { engine } from '../audio/engine'
-import type { Pattern } from '../model/schema'
+import type { Pattern, Song } from '../model/schema'
 import { NOTE_LENGTHS, useStore } from '../state/store'
 import { Button } from '../ui/Button'
 import { IconButton } from '../ui/IconButton'
@@ -9,9 +9,17 @@ import { TopBar, TopBarRow, TopBarTitle } from '../ui/TopBar'
 import { PatternMenu } from './PatternMenu'
 import styles from './PatternScreen.module.css'
 import { PianoRoll } from './piano-roll/PianoRoll'
+import { UndoRedo } from './UndoRedo'
 
-export function PatternScreen({ trackId, patternId }: { trackId: string; patternId: string }) {
-  const song = useStore((state) => state.song)
+export function PatternScreen({
+  song,
+  trackId,
+  patternId,
+}: {
+  song: Song
+  trackId: string
+  patternId: string
+}) {
   const setView = useStore((state) => state.setView)
   const fold = useStore((state) => state.fold)
   const toggleFold = useStore((state) => state.toggleFold)
@@ -27,7 +35,7 @@ export function PatternScreen({ trackId, patternId }: { trackId: string; pattern
   useEffect(() => () => engine.stop(), [])
 
   useEffect(() => {
-    if (!pattern) setView({ screen: 'home' })
+    if (!pattern) setView({ screen: 'song' })
   }, [pattern, setView])
 
   if (!track || !pattern) return null
@@ -36,7 +44,7 @@ export function PatternScreen({ trackId, patternId }: { trackId: string; pattern
 
   const back = () => {
     engine.stop()
-    setView({ screen: 'home' })
+    setView({ screen: 'song' })
   }
 
   const togglePlay = () => {
@@ -58,6 +66,7 @@ export function PatternScreen({ trackId, patternId }: { trackId: string; pattern
               <span style={{ color: `var(--pico-${track.color})` }}>{track.name}</span> ·{' '}
               {pattern.name}
             </TopBarTitle>
+            <UndoRedo />
             <IconButton
               icon={playing ? 'stop' : 'play'}
               label={playing ? 'Stop' : 'Play'}
@@ -75,11 +84,7 @@ export function PatternScreen({ trackId, patternId }: { trackId: string; pattern
                   value={noteLength}
                   onChange={setNoteLength}
                 />
-                <Button
-                  className={fold ? styles.on : undefined}
-                  aria-pressed={fold}
-                  onClick={toggleFold}
-                >
+                <Button variant={fold ? 'on' : undefined} aria-pressed={fold} onClick={toggleFold}>
                   FOLD
                 </Button>
               </>

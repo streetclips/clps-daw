@@ -9,11 +9,6 @@
   flex: 1;
 }
 
-.on {
-  background: var(--pico-7);
-  color: var(--pico-0);
-}
-
 .menu {
   position: absolute;
   top: 100%;
@@ -39,11 +34,6 @@
   flex: 1;
   font-size: 8px;
   color: var(--pico-6);
-}
-
-.danger {
-  color: var(--pico-8);
-  border-color: var(--pico-8);
 }
 
 .header {

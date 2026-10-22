@@ -1,0 +1,49 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  background: rgb(0 0 0 / 60%);
+}
+
+.sheet {
+  display: flex;
+  flex-direction: column;
+  gap: calc(var(--gap) * 2);
+  max-height: 85%;
+  overflow-y: auto;
+  padding: calc(var(--gap) * 2) calc(var(--gap) * 2)
+    calc(var(--gap) * 2 + env(safe-area-inset-bottom));
+  border-top: var(--border) solid var(--pico-7);
+  background: var(--pico-1);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gap);
+}
+
+.title {
+  font-size: 10px;
+  font-weight: normal;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--gap);
+}
+
+.label {
+  flex: none;
+  width: 64px;
+  font-size: 8px;
+  color: var(--pico-6);
+}

@@ -12,20 +12,3 @@
   font-weight: normal;
   color: var(--pico-6);
 }
-
-.row {
-  display: flex;
-  justify-content: space-between;
-}
-
-.ok {
-  color: var(--pico-11);
-}
-
-.bad {
-  color: var(--pico-8);
-}
-
-.pending {
-  color: var(--pico-9);
-}

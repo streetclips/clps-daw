@@ -1,0 +1,15 @@
+.banner {
+  position: fixed;
+  right: var(--gap);
+  bottom: calc(var(--gap) + env(safe-area-inset-bottom));
+  left: var(--gap);
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gap);
+  padding: var(--gap) calc(var(--gap) * 2);
+  border: var(--border) solid var(--pico-10);
+  background: var(--pico-1);
+  color: var(--pico-10);
+}
