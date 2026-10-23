@@ -7,6 +7,7 @@ import { IconButton } from '../ui/IconButton'
 import { Segmented } from '../ui/Segmented'
 import { TopBar, TopBarRow, TopBarTitle } from '../ui/TopBar'
 import { ClipMenu } from './ClipMenu'
+import { useShortcuts } from './shortcuts'
 import { SongSheet } from './SongSheet'
 import styles from './SongScreen.module.css'
 import { TrackView } from './track-view/TrackView'
@@ -47,6 +48,8 @@ export function SongScreen({ song }: { song: Song }) {
     if (playing) engine.stop()
     else engine.play({ mode: 'song', fromBar: cursorBar })
   }
+
+  useShortcuts(togglePlay, sheet === null)
 
   return (
     <div className={styles.screen}>

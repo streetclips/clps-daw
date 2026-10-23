@@ -5,6 +5,7 @@ import {
   useRef,
   useState,
   type CSSProperties,
+  type MouseEvent,
   type PointerEvent,
 } from 'react'
 import { engine } from '../../audio/engine'
@@ -136,6 +137,7 @@ export function TrackView({ song, onOpenTrack, onOpenClipMenu, onAddTrack }: Tra
   const lanesRef = useRef<HTMLDivElement>(null)
   const playheadRef = useRef<HTMLDivElement>(null)
   const pointers = useRef(new Map<number, Point>())
+  const lastPointerType = useRef('touch')
   const gesture = useRef<Gesture>({ kind: 'idle' })
   const draftRef = useRef<Draft | null>(null)
   const pendingScroll = useRef<Point | null>(null)
@@ -290,6 +292,7 @@ export function TrackView({ song, onOpenTrack, onOpenClipMenu, onAddTrack }: Tra
   }
 
   const onPointerDown = (event: PointerEvent<HTMLDivElement>) => {
+    lastPointerType.current = event.pointerType
     if (event.pointerType === 'mouse' && event.button !== 0) return
     if (event.isPrimary) forgetPointers()
     const region = regionAt(event.clientX, event.clientY)
@@ -424,6 +427,17 @@ export function TrackView({ song, onOpenTrack, onOpenClipMenu, onAddTrack }: Tra
     setDraft(null)
   }
 
+  const onContextMenu = (event: MouseEvent<HTMLDivElement>) => {
+    event.preventDefault()
+    if (lastPointerType.current !== 'mouse') return
+    if (regionAt(event.clientX, event.clientY) !== 'lanes') return
+    const local = localPoint(event.clientX, event.clientY)
+    const track = song.tracks[Math.floor(local.y / ROW_HEIGHT)]
+    if (!track || local.x >= lanesWidth) return
+    const clip = clipAt(track, barAt(local.x))
+    if (clip) onOpenClipMenu(track.id, clip.id)
+  }
+
   const onPointerCancel = (event: PointerEvent<HTMLDivElement>) => {
     pointers.current.delete(event.pointerId)
     cancelLongPress()
@@ -439,7 +453,7 @@ export function TrackView({ song, onOpenTrack, onOpenClipMenu, onAddTrack }: Tra
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
       onPointerCancel={onPointerCancel}
-      onContextMenu={(event) => event.preventDefault()}
+      onContextMenu={onContextMenu}
     >
       <div
         className={styles.content}

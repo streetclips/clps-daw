@@ -1,6 +1,7 @@
 # CLPS DAW — Design
 
-A hobby DAW for composing songs on an iPhone. Client-only React SPA, plain Web Audio API, 8-bit look.
+A hobby DAW for composing songs on a phone, a tablet or a computer. Client-only React SPA, plain
+Web Audio API, 8-bit look.
 This document is the single source of truth for product and architecture decisions. When a decision
 changes, update it here in the same commit as the code.
 
@@ -12,7 +13,7 @@ changes, update it here in the same commit as the code.
 | 2   | Song structure     | Patterns placed as clips on a track timeline                                                 |
 | 3   | Sounds             | `sine`, `square`, `triangle`, `sawtooth` oscillators + noise for drums                       |
 | 4   | Import             | JSON projects only. Audio import is v2                                                       |
-| 5   | Device             | iPhone (iOS 17+), portrait only                                                              |
+| 5   | Device             | Any modern browser: phones in portrait (iOS 17+, Android), tablets, desktop                  |
 | 6   | Stack              | Vite + React + TypeScript + Zustand + CSS Modules + pnpm + Vitest. No audio libraries        |
 | 7   | Pattern copies     | Clips link to a shared pattern by default; MAKE UNIQUE detaches one                          |
 | 8   | Tracks             | Up to 8 tracks, polyphonic. Noise tracks are drum tracks with fixed lanes                    |
@@ -23,7 +24,7 @@ changes, update it here in the same commit as the code.
 | 13  | Mixer              | Volume, pan, mute, solo per track + effects                                                  |
 | 14  | Time               | One BPM per song, meter per song (`4/4`, `3/4`, `6/8`), 1/16 grid, no swing, no triplets     |
 | 15  | Look               | PICO-8 palette, Press Start 2P font, English UI                                              |
-| 16  | Install            | PWA, used from the Home Screen                                                               |
+| 16  | Install            | PWA on iOS, Android and desktop; also usable in a browser tab                                |
 | 17  | Pitch range        | C1–C8 for every synth track; song scale highlights rows, FOLD hides out-of-scale rows        |
 | 18  | Gestures           | One finger edits, two fingers pan, pinch zooms horizontally                                  |
 | 19  | Effects            | Filter + delay per track; one shared reverb bus with a send per track; no automation         |
@@ -35,9 +36,10 @@ changes, update it here in the same commit as the code.
 | 25  | Limits             | 128 bars, 60–240 BPM, WAV 44.1 kHz 16-bit stereo + 2 s tail                                  |
 | 26  | Tests              | Vitest on the UI-free core; CI runs typecheck, lint, format check, tests                     |
 | 27  | Delivery           | Push to `main` → GitHub Actions → Pages at `https://streetclips.github.io/clps-daw/`         |
-| 28  | Build order        | Five phases, each ending on an iPhone milestone (see [Phases](#phases))                      |
-| 29  | Workflow           | Phase by phase: deploy, test on the iPhone, continue                                         |
+| 28  | Build order        | Phases, each ending on a device milestone (see [Phases](#phases))                            |
+| 29  | Workflow           | Phase by phase: deploy, test the milestone on its devices, continue                          |
 | 30  | Docs               | This file + `CLAUDE.md`                                                                      |
+| 31  | Mouse and keyboard | Wheel scrolls, Ctrl/⌘ + wheel zooms, right click = clip menu, Space = play, Ctrl/⌘+Z undo    |
 
 ## Architecture
 
@@ -179,13 +181,17 @@ Choosing a preset copies its values into the track; the editor then changes them
 
 ### Layout (base viewport 390 × 844 pt, inside safe areas)
 
+On wider screens the piano roll and the track view fill the width; the songs list and the sheets
+stay in a centered 480 px column.
+
 | View       | Measure                                                              |
 | ---------- | -------------------------------------------------------------------- |
 | Piano roll | key column 44 pt · rows 28 pt (44 pt with FOLD) · default zoom 1 bar |
 | Track view | header column 72 pt · rows 56 pt · bar 48 pt by default              |
 | Buttons    | at least 44 × 44 pt                                                  |
 
-Landscape shows a "ROTATE TO PORTRAIT" overlay (iOS cannot lock orientation from the web).
+Landscape on a phone (height ≤ 500 px) shows a "ROTATE TO PORTRAIT" overlay (iOS cannot lock
+orientation from the web; Android installed apps honour the manifest `orientation`).
 
 ### Gestures
 
@@ -205,6 +211,10 @@ Landscape shows a "ROTATE TO PORTRAIT" overlay (iOS cannot lock orientation from
   tracks show their clips dimmed.
 - Deleting a song asks for confirmation (it is not undoable); everything else relies on undo.
 - Both views: two fingers pan, pinch zooms the time axis.
+- Mouse and keyboard: the wheel scrolls (Shift + wheel scrolls sideways), Ctrl/⌘ + wheel or a
+  trackpad pinch zooms the time axis, right click on a clip opens the clip menu. Space toggles
+  PLAY, Ctrl/⌘+Z undoes, Ctrl/⌘+Shift+Z and Ctrl+Y redo; shortcuts are off while a sheet is open
+  or a text field has focus.
 - A one-finger edit applies on release. When a second finger lands, the edit is cancelled, so a
   two-finger pan never leaves stray notes.
 - Both grids forget every tracked finger when a new touch starts with no other finger down
@@ -232,9 +242,19 @@ Landscape shows a "ROTATE TO PORTRAIT" overlay (iOS cannot lock orientation from
 - Import: `<input type="file" accept=".json,application/json">`, validate, migrate, store as new
   song, open it. Errors show the first line of the validation message.
 
-## iOS notes
+## Platform notes
 
-Verified on 2026-10-21 against WebKit sources, MDN and WebKit bugs.
+### Install
+
+- Chromium (Android, desktop Chrome and Edge) fires `beforeinstallprompt`; the SONGS screen keeps
+  it and shows INSTALL APP (`src/pwa/install.ts`).
+- iOS has no install prompt: the SONGS screen shows "SHARE > ADD TO HOME SCREEN" in Safari.
+- Firefox desktop cannot install PWAs; the app runs in the tab.
+
+### iOS
+
+Verified on 2026-10-21 against WebKit sources, MDN and WebKit bugs. Every workaround is
+feature-detected or harmless elsewhere.
 
 1. **Silent switch**: Web Audio is muted by the ringer switch unless
    `navigator.audioSession.type = 'playback'` is set before creating or resuming the context
@@ -276,13 +296,14 @@ the export fails and the song is untouched.
 
 ## Phases
 
-| #   | Phase                                                    | iPhone milestone                                  |
+| #   | Phase                                                    | Milestone                                         |
 | --- | -------------------------------------------------------- | ------------------------------------------------- |
 | 1   | Skeleton, PWA, deploy, data model                        | Open the URL and install it                       |
 | 2   | Audio engine: scheduler, waves, noise, silent-switch fix | A test pattern plays with the phone on silent     |
 | 3   | Piano roll: grid, gestures, scale/FOLD, loop, preview    | Compose a pattern                                 |
 | 4   | Track view, linked clips, storage, undo                  | Compose a song; it is still there after reopening |
 | 5   | Instruments, mixer, effects, JSON and WAV import/export  | Save the WAV to Files                             |
+| 6   | Cross-platform: install prompt, wide layout, mouse, keys | Install and export a WAV on Android and desktop   |
 
 ## v2 backlog
 

@@ -7,6 +7,7 @@ import { IconButton } from '../ui/IconButton'
 import { Segmented } from '../ui/Segmented'
 import { TopBar, TopBarRow, TopBarTitle } from '../ui/TopBar'
 import { PatternMenu } from './PatternMenu'
+import { useShortcuts } from './shortcuts'
 import styles from './PatternScreen.module.css'
 import { PianoRoll } from './piano-roll/PianoRoll'
 import { UndoRedo } from './UndoRedo'
@@ -38,6 +39,14 @@ export function PatternScreen({
     if (!pattern) setView({ screen: 'song' })
   }, [pattern, setView])
 
+  const togglePlay = () => {
+    engine.unlock()
+    if (playing) engine.stop()
+    else engine.play({ mode: 'pattern', trackId, patternId })
+  }
+
+  useShortcuts(togglePlay, !menuOpen)
+
   if (!track || !pattern) return null
 
   const drums = track.instrument.type === 'drums'
@@ -45,12 +54,6 @@ export function PatternScreen({
   const back = () => {
     engine.stop()
     setView({ screen: 'song' })
-  }
-
-  const togglePlay = () => {
-    engine.unlock()
-    if (playing) engine.stop()
-    else engine.play({ mode: 'pattern', trackId, patternId })
   }
 
   const edit = (change: (pattern: Pattern, steps: number) => Pattern) =>

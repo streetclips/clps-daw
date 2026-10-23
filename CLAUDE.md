@@ -1,7 +1,7 @@
 # CLPS DAW
 
-Hobby 8-bit DAW for the iPhone: a client-only React SPA on the plain Web Audio API, installed as a
-PWA from GitHub Pages.
+Hobby 8-bit DAW for phones, tablets and desktop browsers: a client-only React SPA on the plain Web
+Audio API, installable as a PWA from GitHub Pages.
 
 ## Design
 
@@ -13,7 +13,7 @@ commit as the code.
 ## Workflow
 
 - Work one phase at a time (DESIGN.md → Phases). A phase is done when it is deployed and the user
-  has tested its milestone on an iPhone; end the phase by handing over that milestone.
+  has tested its milestone on its devices; end the phase by handing over that milestone.
 - `pnpm check` is the CI gate; run it green before every commit.
 - Commit straight to `main`, with the message prefixed `[main] ` (a global commit-msg hook
   enforces it). Every push to `main` deploys.

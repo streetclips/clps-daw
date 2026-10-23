@@ -7,7 +7,8 @@ import { listSongs, loadSong, saveSong, seedSong, type SongSummary } from '../st
 import { useStore } from '../state/store'
 import { Button } from '../ui/Button'
 import { Panel } from '../ui/Panel'
-import { isStandalone } from './platform'
+import { useInstallPrompt } from '../pwa/install'
+import { isIos, isStandalone } from './platform'
 import styles from './SongsScreen.module.css'
 
 function formatDate(iso: string): string {
@@ -29,6 +30,7 @@ export function SongsScreen() {
   const [songs, setSongs] = useState<SongSummary[] | null>(null)
   const [importError, setImportError] = useState<string | null>(null)
   const fileInput = useRef<HTMLInputElement>(null)
+  const install = useInstallPrompt()
 
   useEffect(() => {
     let active = true
@@ -103,7 +105,10 @@ export function SongsScreen() {
         ))}
       </Panel>
 
-      {!isStandalone() && <p className={styles.hint}>TO INSTALL: SHARE &gt; ADD TO HOME SCREEN</p>}
+      {install && <Button onClick={install}>INSTALL APP</Button>}
+      {!install && !isStandalone() && isIos() && (
+        <p className={styles.hint}>TO INSTALL: SHARE &gt; ADD TO HOME SCREEN</p>
+      )}
 
       <footer className={styles.version}>
         v{__APP_VERSION__} · {__BUILD_SHA__}
