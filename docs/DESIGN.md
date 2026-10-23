@@ -39,7 +39,7 @@ changes, update it here in the same commit as the code.
 | 28  | Build order        | Phases, each ending on a device milestone (see [Phases](#phases))                            |
 | 29  | Workflow           | Phase by phase: deploy, test the milestone on its devices, continue                          |
 | 30  | Docs               | This file + `CLAUDE.md`                                                                      |
-| 31  | Mouse and keyboard | Wheel scrolls, Ctrl/⌘ + wheel zooms, right click = clip menu, Space = play, Ctrl/⌘+Z undo    |
+| 31  | Mouse and keyboard | Wheel, right click and keyboard shortcuts (see [Gestures](#gestures))                        |
 
 ## Architecture
 
@@ -214,7 +214,7 @@ orientation from the web; Android installed apps honour the manifest `orientatio
 - Mouse and keyboard: the wheel scrolls (Shift + wheel scrolls sideways), Ctrl/⌘ + wheel or a
   trackpad pinch zooms the time axis, right click on a clip opens the clip menu. Space toggles
   PLAY, Ctrl/⌘+Z undoes, Ctrl/⌘+Shift+Z and Ctrl+Y redo; shortcuts are off while a sheet is open
-  or a text field has focus.
+  or a text field has focus. Escape closes the open sheet or menu.
 - A one-finger edit applies on release. When a second finger lands, the edit is cancelled, so a
   two-finger pan never leaves stray notes.
 - Both grids forget every tracked finger when a new touch starts with no other finger down

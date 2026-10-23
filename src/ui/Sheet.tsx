@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { Button } from './Button'
 import styles from './Sheet.module.css'
+import { useEscape } from './useEscape'
 
 export function Sheet({
   title,
@@ -11,6 +12,8 @@ export function Sheet({
   onClose: () => void
   children: ReactNode
 }) {
+  useEscape(onClose)
+
   return (
     <div className={styles.backdrop} onClick={onClose}>
       <section className={styles.sheet} onClick={(event) => event.stopPropagation()}>

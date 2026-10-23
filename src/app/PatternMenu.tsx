@@ -1,6 +1,7 @@
 import { clearPattern, shiftPattern, transposePattern } from '../model/edit'
 import type { Pattern } from '../model/schema'
 import { Button } from '../ui/Button'
+import { useEscape } from '../ui/useEscape'
 import styles from './PatternScreen.module.css'
 
 type Edit = (pattern: Pattern, steps: number) => Pattern
@@ -16,6 +17,8 @@ export function PatternMenu({
   onEdit: (edit: Edit) => void
   onClose: () => void
 }) {
+  useEscape(onClose)
+
   return (
     <div className={styles.menu}>
       {!drums && (
